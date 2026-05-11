@@ -198,7 +198,10 @@ body{font-family:'Lato',sans-serif;background:#f7eef2;color:var(--text);min-heig
             Categoría
             <button type="button" class="btn-renombrar" onclick="abrirRenombrar()" title="Renombrar categoría en todos los productos">✏️ Renombrar cat.</button>
           </label>
-          <input id="fCategoria" placeholder="Ej: Ramos, Coronas, Centros de mesa">
+          <select id="fCategoriaSelect" onchange="onCatSelectChange(this)" style="padding:11px 16px;border:1.5px solid rgba(139,0,53,0.15);border-radius:12px;font-size:14px;font-family:'Lato',sans-serif;color:var(--text);outline:none;transition:border-color 0.2s;background:white;width:100%">
+            <option value="">— Seleccionar categoría —</option>
+          </select>
+          <input id="fCategoria" placeholder="Escribir nueva categoría..." style="display:none;margin-top:8px;padding:11px 16px;border:1.5px solid rgba(139,0,53,0.15);border-radius:12px;font-size:14px;font-family:'Lato',sans-serif;color:var(--text);outline:none;transition:border-color 0.2s;width:100%">
         </div>
         <div class="form-group full">
           <label>Descripción</label>
@@ -400,6 +403,8 @@ async function cargarProductos() {
     const snap = await getDocs(collection(db, 'flores'));
     productos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderLista();
+    const lastCat = sessionStorage.getItem('elrosal_lastcat') || '';
+    actualizarSelectCategorias(lastCat);
   } catch(e) {
     mostrarToast('Error al cargar productos', false);
   }
@@ -540,7 +545,9 @@ window.confirmarRenombrar = async () => {
     await Promise.all(afectados.map(p => updateDoc(doc(db, 'flores', p.id), { categoria: catNueva })));
     afectados.forEach(p => p.categoria = catNueva);
     cerrarRenombrar();
+    if (sessionStorage.getItem('elrosal_lastcat') === catVieja) sessionStorage.setItem('elrosal_lastcat', catNueva);
     renderLista();
+    actualizarSelectCategorias(sessionStorage.getItem('elrosal_lastcat') || '');
     mostrarToast(`✅ "${catVieja}" → "${catNueva}" en ${afectados.length} productos`, true);
   } catch(e) {
     mostrarToast('❌ Error al renombrar', false);
@@ -570,7 +577,13 @@ window.guardarProducto = async () => {
       nombre,
       precio: parseFloat(precio),
       precioMayor: precioMayor ? parseFloat(precioMayor) : null,
-      categoria: document.getElementById('fCategoria').value.trim(),
+      categoria: (() => {
+        const sel = document.getElementById('fCategoriaSelect').value;
+        const inp = document.getElementById('fCategoria').value.trim();
+        const cat = (sel === '__nueva__' || sel === '') ? inp : sel;
+        if (cat) sessionStorage.setItem('elrosal_lastcat', cat);
+        return cat;
+      })(),
       descripcion: document.getElementById('fDesc').value.trim(),
       imagen,
       imagen2: imagen2 || null
@@ -607,7 +620,7 @@ window.editarProducto = (id) => {
   document.getElementById('fNombre').value = p.nombre || '';
   document.getElementById('fPrecio').value = p.precio || '';
   document.getElementById('fPrecioMayor').value = p.precioMayor || '';
-  document.getElementById('fCategoria').value = p.categoria || '';
+  actualizarSelectCategorias(p.categoria || '');
   document.getElementById('fDesc').value = p.descripcion || '';
 
   const preview1 = document.getElementById('imgPreview1');
@@ -630,7 +643,10 @@ window.cancelarEdicion = () => { editId = null; limpiarForm(); };
 
 function limpiarForm() {
   editId = null; imagenFile1 = null; imagenFile2 = null; imagenUrlActual1 = ''; imagenUrlActual2 = '';
-  ['fNombre','fPrecio','fPrecioMayor','fCategoria','fDesc'].forEach(id => document.getElementById(id).value = '');
+  ['fNombre','fPrecio','fPrecioMayor','fDesc'].forEach(id => document.getElementById(id).value = '');
+  // Mantener la última categoría seleccionada
+  const lastCat = sessionStorage.getItem('elrosal_lastcat') || '';
+  actualizarSelectCategorias(lastCat);
   ['fImagen1','fImagen2'].forEach(id => document.getElementById(id).value = '');
   [1,2].forEach(s => {
     const preview = document.getElementById(`imgPreview${s}`);
@@ -644,6 +660,42 @@ function limpiarForm() {
   document.getElementById('btnGuardar').textContent = '💾 Guardar producto';
   document.getElementById('btnCancelar').style.display = 'none';
 }
+
+// ── SELECT CATEGORÍA ──
+function actualizarSelectCategorias(seleccionada = '') {
+  const cats = [...new Set(productos.map(p => p.categoria).filter(Boolean))].sort();
+  const sel = document.getElementById('fCategoriaSelect');
+  const input = document.getElementById('fCategoria');
+  sel.innerHTML = '<option value="">— Seleccionar categoría —</option>' +
+    cats.map(c => `<option value="${c}" ${c === seleccionada ? 'selected' : ''}>${c}</option>`).join('') +
+    '<option value="__nueva__">➕ Nueva categoría...</option>';
+  if (seleccionada && seleccionada !== '__nueva__') {
+    input.value = seleccionada;
+    input.style.display = 'none';
+    sel.style.display = 'block';
+  } else if (seleccionada === '__nueva__' || !cats.includes(seleccionada) && seleccionada) {
+    input.value = seleccionada;
+    input.style.display = 'block';
+    sel.value = '__nueva__';
+  } else {
+    input.value = '';
+    input.style.display = 'none';
+  }
+}
+
+window.onCatSelectChange = (sel) => {
+  const input = document.getElementById('fCategoria');
+  if (sel.value === '__nueva__') {
+    input.style.display = 'block';
+    input.value = '';
+    input.focus();
+    input.placeholder = 'Escribir nueva categoría...';
+  } else {
+    input.style.display = 'none';
+    input.value = sel.value;
+    sessionStorage.setItem('elrosal_lastcat', sel.value);
+  }
+};
 
 window.scrollAlForm = () => document.getElementById('formCard').scrollIntoView({ behavior: 'smooth' });
 
