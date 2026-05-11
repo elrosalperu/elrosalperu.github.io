@@ -106,6 +106,42 @@ body{font-family:'Lato',sans-serif;background:#f7eef2;color:var(--text);min-heig
 .upload-progress-bar{height:100%;background:linear-gradient(90deg,var(--crimson),var(--crimson-light));border-radius:3px;transition:width 0.3s;width:0}
 
 @media(max-width:600px){.form-grid{grid-template-columns:1fr}.producto-row-actions{flex-direction:column}}
+
+/* BÚSQUEDA */
+.search-wrap{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.search-input{padding:9px 16px;border:1.5px solid rgba(139,0,53,0.15);border-radius:50px;font-size:13px;font-family:'Lato',sans-serif;color:var(--text);outline:none;transition:border-color 0.2s;width:220px;background:white}
+.search-input:focus{border-color:var(--crimson)}
+.filter-cat{padding:9px 16px;border:1.5px solid rgba(139,0,53,0.15);border-radius:50px;font-size:13px;font-family:'Lato',sans-serif;color:var(--text);outline:none;background:white;cursor:pointer;transition:border-color 0.2s}
+.filter-cat:focus{border-color:var(--crimson)}
+.productos-count{font-size:12px;color:var(--text-mid);font-weight:600}
+
+/* DRAG */
+.producto-row{cursor:grab}
+.producto-row.dragging{opacity:0.45;box-shadow:0 8px 24px rgba(139,0,53,0.2);transform:scale(0.98)}
+.producto-row.drag-over{border:2px dashed var(--crimson);background:#fff0f5}
+
+/* BTN RENOMBRAR */
+.btn-renombrar{background:none;border:none;cursor:pointer;font-size:14px;padding:4px 6px;border-radius:6px;transition:background 0.2s;color:var(--gold);font-weight:800}
+.btn-renombrar:hover{background:#fffbf0}
+
+/* MODAL GENÉRICO */
+.modal-adm-overlay{position:fixed;inset:0;background:rgba(45,21,32,0.55);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-adm-overlay.open{display:flex}
+.modal-adm-box{background:white;border-radius:20px;padding:28px 26px;width:100%;max-width:360px;box-shadow:0 20px 56px rgba(139,0,53,0.25);animation:admIn 0.25s cubic-bezier(0.4,0,0.2,1)}
+@keyframes admIn{from{opacity:0;transform:scale(0.93) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-adm-icon{font-size:40px;text-align:center;margin-bottom:12px}
+.modal-adm-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--crimson);margin-bottom:6px;text-align:center}
+.modal-adm-desc{font-size:13px;color:var(--text-mid);margin-bottom:18px;text-align:center;line-height:1.5}
+.modal-adm-input{width:100%;border:2px solid rgba(139,0,53,0.18);border-radius:12px;padding:12px 14px;font-size:14px;font-family:'Lato',sans-serif;color:var(--text);outline:none;transition:border-color 0.2s;margin-bottom:16px}
+.modal-adm-input:focus{border-color:var(--crimson)}
+.modal-adm-btns{display:flex;gap:8px}
+.btn-adm-cancel{flex:1;background:none;border:1.5px solid rgba(139,0,53,0.18);color:var(--text-mid);border-radius:50px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Lato',sans-serif;transition:all 0.2s}
+.btn-adm-cancel:hover{border-color:var(--crimson);color:var(--crimson)}
+.btn-adm-ok{flex:2;border:none;border-radius:50px;padding:11px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Lato',sans-serif;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-adm-ok.crimson{background:linear-gradient(135deg,var(--crimson),var(--crimson-light));color:white;box-shadow:0 4px 14px rgba(139,0,53,0.28)}
+.btn-adm-ok.crimson:hover{transform:translateY(-1px)}
+.btn-adm-ok.danger{background:linear-gradient(135deg,#dc2626,#ef4444);color:white;box-shadow:0 4px 14px rgba(220,38,38,0.28)}
+.btn-adm-ok.danger:hover{transform:translateY(-1px)}
 </style>
 </head>
 <body>
@@ -158,7 +194,10 @@ body{font-family:'Lato',sans-serif;background:#f7eef2;color:var(--text);min-heig
           <input id="fPrecioMayor" type="number" placeholder="Ej: 35.00" min="0" step="0.50">
         </div>
         <div class="form-group">
-          <label>Categoría</label>
+          <label style="display:flex;align-items:center;justify-content:space-between">
+            Categoría
+            <button type="button" class="btn-renombrar" onclick="abrirRenombrar()" title="Renombrar categoría en todos los productos">✏️ Renombrar cat.</button>
+          </label>
           <input id="fCategoria" placeholder="Ej: Ramos, Coronas, Centros de mesa">
         </div>
         <div class="form-group full">
@@ -202,13 +241,50 @@ body{font-family:'Lato',sans-serif;background:#f7eef2;color:var(--text);min-heig
     <!-- LISTA -->
     <div class="lista-card">
       <div class="lista-header">
-        <div class="lista-title">🌺 Productos registrados</div>
+        <div>
+          <div class="lista-title">🌺 Productos registrados</div>
+          <div class="productos-count" id="productosCount"></div>
+        </div>
         <button class="btn-nuevo" onclick="scrollAlForm()">+ Agregar nuevo</button>
+      </div>
+      <div class="search-wrap" style="margin-bottom:16px">
+        <input class="search-input" id="searchInput" placeholder="🔍 Buscar producto..." oninput="filtrarLista()">
+        <select class="filter-cat" id="filterCat" onchange="filtrarLista()">
+          <option value="">Todas las categorías</option>
+        </select>
       </div>
       <div id="listaProductos">
         <div class="producto-row"><div class="skeleton" style="width:64px;height:64px;border-radius:10px;flex-shrink:0"></div><div style="flex:1;padding:4px 0"><div class="skeleton" style="height:16px;width:60%;margin-bottom:8px"></div><div class="skeleton" style="height:12px;width:40%"></div></div></div>
         <div class="producto-row"><div class="skeleton" style="width:64px;height:64px;border-radius:10px;flex-shrink:0"></div><div style="flex:1;padding:4px 0"><div class="skeleton" style="height:16px;width:60%;margin-bottom:8px"></div><div class="skeleton" style="height:12px;width:40%"></div></div></div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RENOMBRAR CATEGORÍA -->
+<div class="modal-adm-overlay" id="modalRenombrar">
+  <div class="modal-adm-box">
+    <div class="modal-adm-icon">🏷️</div>
+    <div class="modal-adm-title">Renombrar categoría</div>
+    <div class="modal-adm-desc">Se actualizará en <strong id="renombrarCount">todos</strong> los productos de esta categoría.</div>
+    <select class="modal-adm-input" id="renombrarSelect"></select>
+    <input class="modal-adm-input" id="renombrarNuevo" placeholder="Nuevo nombre de categoría">
+    <div class="modal-adm-btns">
+      <button class="btn-adm-cancel" onclick="cerrarRenombrar()">Cancelar</button>
+      <button class="btn-adm-ok crimson" onclick="confirmarRenombrar()">✅ Renombrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAR ELIMINAR -->
+<div class="modal-adm-overlay" id="modalEliminar">
+  <div class="modal-adm-box">
+    <div class="modal-adm-icon">🗑️</div>
+    <div class="modal-adm-title">Eliminar producto</div>
+    <div class="modal-adm-desc">¿Seguro que quieres eliminar <strong id="eliminarNombre"></strong>? Esta acción no se puede deshacer.</div>
+    <div class="modal-adm-btns">
+      <button class="btn-adm-cancel" onclick="cerrarEliminar()">Cancelar</button>
+      <button class="btn-adm-ok danger" onclick="confirmarEliminar()">🗑️ Sí, eliminar</button>
     </div>
   </div>
 </div>
@@ -329,14 +405,27 @@ async function cargarProductos() {
   }
 }
 
-function renderLista() {
+function renderLista(lista_filtrada = null) {
   const lista = document.getElementById('listaProductos');
-  if (productos.length === 0) {
-    lista.innerHTML = `<div class="empty-lista"><div class="icon">🌸</div><p>Aún no hay productos. ¡Agrega el primero!</p></div>`;
+  const fuente = lista_filtrada || productos;
+  
+  // Actualizar contador
+  document.getElementById('productosCount').textContent = 
+    lista_filtrada ? `${fuente.length} de ${productos.length} productos` : `${productos.length} productos`;
+
+  // Actualizar filtro de categorías
+  const cats = [...new Set(productos.map(p => p.categoria).filter(Boolean))].sort();
+  const filterCat = document.getElementById('filterCat');
+  const selectedCat = filterCat.value;
+  filterCat.innerHTML = '<option value="">Todas las categorías</option>' + 
+    cats.map(c => `<option value="${c}" ${c === selectedCat ? 'selected' : ''}>${c}</option>`).join('');
+
+  if (fuente.length === 0) {
+    lista.innerHTML = `<div class="empty-lista"><div class="icon">🌸</div><p>Sin resultados</p></div>`;
     return;
   }
-  lista.innerHTML = productos.map(p => `
-    <div class="producto-row" id="row-${p.id}">
+  lista.innerHTML = fuente.map(p => `
+    <div class="producto-row" id="row-${p.id}" draggable="true" data-id="${p.id}">
       ${p.imagen ? `<img class="producto-row-img" src="${p.imagen}" alt="${p.nombre}">` : `<div class="producto-row-img">🌺</div>`}
       <div class="producto-row-info">
         ${p.categoria ? `<div class="producto-row-cat">${p.categoria}</div>` : ''}
@@ -345,10 +434,120 @@ function renderLista() {
       </div>
       <div class="producto-row-actions">
         <button class="btn-edit" onclick="editarProducto('${p.id}')">✏️ Editar</button>
-        <button class="btn-delete" onclick="eliminarProducto('${p.id}', '${p.nombre}')">🗑️</button>
+        <button class="btn-delete" onclick="pedirEliminar('${p.id}', '${p.nombre.replace(/'/g,"\'")}')">🗑️</button>
       </div>
     </div>`).join('');
+
+  // Drag & drop
+  initDrag();
 }
+
+// ── BUSCAR / FILTRAR ──
+window.filtrarLista = () => {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const cat = document.getElementById('filterCat').value;
+  const filtrados = productos.filter(p => {
+    const matchQ = !q || p.nombre.toLowerCase().includes(q) || (p.descripcion||'').toLowerCase().includes(q);
+    const matchCat = !cat || p.categoria === cat;
+    return matchQ && matchCat;
+  });
+  renderLista(filtrados);
+};
+
+// ── DRAG & DROP ──
+let dragId = null;
+
+function initDrag() {
+  document.querySelectorAll('.producto-row[draggable]').forEach(row => {
+    row.addEventListener('dragstart', () => { dragId = row.dataset.id; row.classList.add('dragging'); });
+    row.addEventListener('dragend', () => { row.classList.remove('dragging'); dragId = null; });
+    row.addEventListener('dragover', e => { e.preventDefault(); row.classList.add('drag-over'); });
+    row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      row.classList.remove('drag-over');
+      if (!dragId || dragId === row.dataset.id) return;
+      const fromIdx = productos.findIndex(p => p.id === dragId);
+      const toIdx = productos.findIndex(p => p.id === row.dataset.id);
+      if (fromIdx === -1 || toIdx === -1) return;
+      const [moved] = productos.splice(fromIdx, 1);
+      productos.splice(toIdx, 0, moved);
+      renderLista();
+      mostrarToast('↕️ Orden actualizado', true);
+    });
+  });
+}
+
+// ── MODAL ELIMINAR ──
+let eliminarIdPendiente = null;
+
+window.pedirEliminar = (id, nombre) => {
+  eliminarIdPendiente = id;
+  document.getElementById('eliminarNombre').textContent = nombre;
+  document.getElementById('modalEliminar').classList.add('open');
+};
+
+window.cerrarEliminar = () => {
+  document.getElementById('modalEliminar').classList.remove('open');
+  eliminarIdPendiente = null;
+};
+
+window.confirmarEliminar = async () => {
+  if (!eliminarIdPendiente) return;
+  const id = eliminarIdPendiente;
+  cerrarEliminar();
+  try {
+    await deleteDoc(doc(db, 'flores', id));
+    const row = document.getElementById(`row-${id}`);
+    if (row) { row.style.opacity='0'; row.style.transform='translateX(20px)'; row.style.transition='all 0.3s'; setTimeout(()=>row.remove(),300); }
+    productos = productos.filter(p => p.id !== id);
+    renderLista();
+    mostrarToast('🗑️ Producto eliminado', true);
+  } catch(e) { mostrarToast('❌ Error al eliminar', false); }
+};
+
+// ── MODAL RENOMBRAR CATEGORÍA ──
+window.abrirRenombrar = () => {
+  const cats = [...new Set(productos.map(p => p.categoria).filter(Boolean))].sort();
+  if (cats.length === 0) { mostrarToast('No hay categorías registradas', false); return; }
+  const sel = document.getElementById('renombrarSelect');
+  sel.innerHTML = cats.map(c => `<option value="${c}">${c} (${productos.filter(p=>p.categoria===c).length} productos)</option>`).join('');
+  document.getElementById('renombrarNuevo').value = '';
+  actualizarContadorRenombrar();
+  sel.onchange = actualizarContadorRenombrar;
+  document.getElementById('modalRenombrar').classList.add('open');
+  setTimeout(() => document.getElementById('renombrarNuevo').focus(), 200);
+};
+
+function actualizarContadorRenombrar() {
+  const cat = document.getElementById('renombrarSelect').value;
+  const count = productos.filter(p => p.categoria === cat).length;
+  document.getElementById('renombrarCount').textContent = `${count} producto${count !== 1 ? 's' : ''}`;
+}
+
+window.cerrarRenombrar = () => document.getElementById('modalRenombrar').classList.remove('open');
+
+window.confirmarRenombrar = async () => {
+  const catVieja = document.getElementById('renombrarSelect').value;
+  const catNueva = document.getElementById('renombrarNuevo').value.trim();
+  if (!catNueva) { document.getElementById('renombrarNuevo').focus(); return; }
+  if (catNueva === catVieja) { cerrarRenombrar(); return; }
+
+  const afectados = productos.filter(p => p.categoria === catVieja);
+  const btn = document.querySelector('#modalRenombrar .btn-adm-ok');
+  btn.textContent = '⏳ Actualizando...'; btn.disabled = true;
+  try {
+    await Promise.all(afectados.map(p => updateDoc(doc(db, 'flores', p.id), { categoria: catNueva })));
+    afectados.forEach(p => p.categoria = catNueva);
+    cerrarRenombrar();
+    renderLista();
+    mostrarToast(`✅ "${catVieja}" → "${catNueva}" en ${afectados.length} productos`, true);
+  } catch(e) {
+    mostrarToast('❌ Error al renombrar', false);
+  } finally {
+    btn.textContent = '✅ Renombrar'; btn.disabled = false;
+  }
+};
 
 // ── GUARDAR ──
 window.guardarProducto = async () => {
@@ -424,17 +623,7 @@ window.editarProducto = (id) => {
   document.getElementById('formCard').scrollIntoView({ behavior: 'smooth' });
 };
 
-// ── ELIMINAR ──
-window.eliminarProducto = async (id, nombre) => {
-  if (!confirm(`¿Eliminar "${nombre}"? Esta acción no se puede deshacer.`)) return;
-  try {
-    await deleteDoc(doc(db, 'flores', id));
-    const row = document.getElementById(`row-${id}`);
-    if (row) { row.style.opacity = '0'; row.style.transform = 'translateX(20px)'; row.style.transition = 'all 0.3s'; setTimeout(() => row.remove(), 300); }
-    productos = productos.filter(p => p.id !== id);
-    mostrarToast('🗑️ Producto eliminado', true);
-  } catch(e) { mostrarToast('❌ Error al eliminar', false); }
-};
+// ── ELIMINAR (manejado por pedirEliminar/confirmarEliminar) ──
 
 // ── CANCELAR EDICIÓN ──
 window.cancelarEdicion = () => { editId = null; limpiarForm(); };
