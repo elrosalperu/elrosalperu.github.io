@@ -68,11 +68,11 @@ body { font-family:'Lato',sans-serif; background:var(--blush); color:var(--text)
 .producto-img-placeholder { width:100%; height:210px; background:linear-gradient(135deg,#fde8f0,#f8c4d4); display:flex; align-items:center; justify-content:center; font-size:56px; flex-shrink:0; }
 .producto-body { padding:14px 16px 16px; display:flex; flex-direction:column; flex:1; }
 .producto-categoria { font-size:9px; font-weight:800; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold); margin-bottom:5px; }
-.producto-nombre { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; color:var(--text); margin-bottom:5px; line-height:1.35; }
+.producto-nombre { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--text); margin-bottom:5px; line-height:1.35; }
 .producto-desc { font-size:12.5px; color:var(--text-soft); line-height:1.55; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; flex:1; }
 .producto-footer { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:14px; padding-top:12px; border-top:1px solid rgba(139,0,53,0.07); }
-.producto-precio { font-family:'Lato',sans-serif; font-size:22px; font-weight:900; color:var(--crimson); letter-spacing:-0.5px; line-height:1; }
-.producto-precio span { font-size:13px; font-weight:700; color:var(--text-soft); margin-right:1px; }
+.producto-precio { font-family:'Lato',sans-serif; font-size:26px; font-weight:900; color:var(--crimson); letter-spacing:-0.5px; line-height:1; }
+.producto-precio span { font-size:15px; font-weight:700; color:var(--text-soft); margin-right:1px; }
 .btn-agregar { background:linear-gradient(135deg,var(--crimson),var(--crimson-light)); color:white; border:none; border-radius:50px; padding:9px 16px; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s; font-family:'Lato',sans-serif; white-space:nowrap; flex-shrink:0; }
 .btn-agregar:hover { transform:scale(1.04); box-shadow:0 4px 14px rgba(139,0,53,0.32); }
 
@@ -127,10 +127,14 @@ body { font-family:'Lato',sans-serif; background:var(--blush); color:var(--text)
 .modal-producto-cat { font-size:9px; font-weight:800; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold); margin-bottom:4px; }
 .modal-producto-nombre { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--text); margin-bottom:6px; line-height:1.3; }
 .modal-producto-desc { font-size:13px; color:var(--text-soft); line-height:1.55; margin-bottom:14px; }
-.modal-mayor-hint { font-size:11.5px; color:var(--gold); font-weight:700; margin-bottom:14px; background:#fffbf0; border-radius:8px; padding:7px 10px; }
+.modal-mayor-hint { font-size:15px; color:var(--gold); font-weight:800; margin-bottom:14px; background:#fffbf0; border-radius:8px; padding:9px 12px; letter-spacing:0.2px; }
 .modal-divider { height:1px; background:rgba(139,0,53,0.08); margin-bottom:14px; }
-.modal-cantidad-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-.modal-cantidad-label { font-size:13px; font-weight:700; color:var(--text-mid); text-transform:uppercase; letter-spacing:0.5px; }
+/* Fila: badge izq | controles der */
+.modal-cantidad-row { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.modal-badge-side { display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-end; }
+.badge-mayor-modal { display:inline-block; background:linear-gradient(135deg,var(--gold),#E8C97A); color:var(--crimson); font-size:13px; font-weight:900; padding:6px 16px; border-radius:50px; letter-spacing:0.5px; box-shadow:0 3px 10px rgba(201,168,76,0.35); white-space:nowrap; }
+.modal-qty-block { display:flex; flex-direction:column; align-items:center; gap:6px; }
+.modal-cantidad-label { font-size:11px; font-weight:800; color:var(--text-mid); text-transform:uppercase; letter-spacing:1px; }
 .modal-qty-controls { display:flex; align-items:center; gap:14px; }
 .modal-qty-btn { width:36px; height:36px; border-radius:50%; border:2px solid rgba(139,0,53,0.22); background:white; color:var(--crimson); font-size:20px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; line-height:1; }
 .modal-qty-btn:hover { background:var(--crimson); color:white; border-color:var(--crimson); }
@@ -138,7 +142,7 @@ body { font-family:'Lato',sans-serif; background:var(--blush); color:var(--text)
 .modal-precio-wrap { background:linear-gradient(135deg,#fff0f5,#fde8f0); border-radius:12px; padding:12px 16px; text-align:center; margin-bottom:16px; }
 .modal-precio-total { font-family:'Lato',sans-serif; font-size:28px; font-weight:900; color:var(--crimson); letter-spacing:-1px; line-height:1; }
 .modal-precio-unit { font-size:12px; color:var(--text-soft); margin-top:3px; font-weight:600; }
-.badge-mayor-modal { display:inline-block; background:linear-gradient(135deg,var(--gold),#E8C97A); color:var(--crimson); font-size:10px; font-weight:800; padding:2px 10px; border-radius:50px; margin-left:8px; letter-spacing:0.5px; vertical-align:middle; }
+
 .modal-btns-producto { display:flex; gap:8px; }
 .btn-modal-producto-cancel { flex:1; background:none; border:1.5px solid rgba(139,0,53,0.18); color:var(--text-mid); border-radius:50px; padding:12px; font-size:13.5px; font-weight:700; cursor:pointer; font-family:'Lato',sans-serif; transition:all 0.2s; }
 .btn-modal-producto-cancel:hover { border-color:var(--crimson); color:var(--crimson); }
@@ -178,8 +182,8 @@ footer span { color:#E8C97A; font-weight:700; }
   .producto-img-wrap,.producto-img-placeholder{height:170px}
   .producto-img,.producto-img-hover{height:170px}
   .producto-body{padding:11px 12px 13px}
-  .producto-nombre{font-size:15px}
-  .producto-precio{font-size:19px}
+  .producto-nombre{font-size:18px}
+  .producto-precio{font-size:23px}
 }
 </style>
 </head>
@@ -273,12 +277,16 @@ footer span { color:#E8C97A; font-weight:700; }
       <div class="modal-mayor-hint" id="modalMayorHint" style="display:none"></div>
       <div class="modal-divider"></div>
       <div class="modal-cantidad-row">
-        <span class="modal-cantidad-label">Cantidad</span>
-        <div class="modal-qty-controls">
-          <button class="modal-qty-btn" onclick="cambiarModalQty(-1)">−</button>
-          <span class="modal-qty-num" id="modalQtyNum">1</span>
-          <button class="modal-qty-btn" onclick="cambiarModalQty(1)">+</button>
-          <span class="badge-mayor-modal" id="modalBadgeMayor" style="display:none">Por mayor</span>
+        <div class="modal-badge-side">
+          <span class="badge-mayor-modal" id="modalBadgeMayor" style="display:none">🏷️ Por mayor</span>
+        </div>
+        <div class="modal-qty-block">
+          <span class="modal-cantidad-label">Cantidad</span>
+          <div class="modal-qty-controls">
+            <button class="modal-qty-btn" onclick="cambiarModalQty(-1)">−</button>
+            <span class="modal-qty-num" id="modalQtyNum">1</span>
+            <button class="modal-qty-btn" onclick="cambiarModalQty(1)">+</button>
+          </div>
         </div>
       </div>
       <div class="modal-precio-wrap">
@@ -464,9 +472,7 @@ function renderCarrito() {
         <div class="cart-item-precio">S/ ${(p.precioUnit * p.qty).toFixed(2)}${p._esMayor ? ' <span style="font-size:11px;color:#c0a030;font-family:Lato">precio mayor</span>' : ''}</div>
       </div>
       <div class="cart-qty-controls">
-        <button class="btn-qty" onclick="cambiarQty('${p.id}', -1)">−</button>
-        <span class="cart-qty">${p.qty}</span>
-        <button class="btn-qty" onclick="cambiarQty('${p.id}', 1)">+</button>
+        <span class="cart-qty">${p.qty}x</span>
         <button class="btn-remove" onclick="eliminarProducto('${p.id}')">🗑️</button>
       </div>
     </div>`).join('');
@@ -521,9 +527,9 @@ window.confirmarPedido = () => {
   });
 
   const items = Object.values(agrupado)
-    .map(p => p.qty > 1 ? `• ${p.qty}x ${p.nombre} – S/ ${(p.precioUnit * p.qty).toFixed(2)}${p.precioUnit !== Number(p.precio) ? ' (precio mayor)' : ''}` : `• ${p.nombre} – S/ ${p.precioUnit.toFixed(2)}`)
+    .map(p => p.qty > 1 ? `• ${p.qty}x ${p.nombre} – S/ ${(p.precio * p.qty).toFixed(2)}` : `• ${p.nombre} – S/ ${p.precio.toFixed(2)}`)
     .join('\n');
-  const total = Object.values(agrupado).reduce((a, p) => a + p.precioUnit * p.qty, 0);
+  const total = Object.values(agrupado).reduce((a, p) => a + p.precio * p.qty, 0);
 
   const msg = encodeURIComponent(
     `🌹 *El Rosal – Pedido*\n\n` +
