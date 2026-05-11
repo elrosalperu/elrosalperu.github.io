@@ -61,16 +61,16 @@ body { font-family:'Lato',sans-serif; background:var(--blush); color:var(--text)
 /* CARD */
 .producto-card { background:white; border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow); transition:all 0.3s; border:1px solid rgba(201,168,76,0.1); }
 .producto-card:hover { transform:translateY(-8px); box-shadow:var(--shadow-lg); }
-.producto-img-wrap { position:relative; width:100%; height:240px; overflow:hidden; }
-.producto-img, .producto-img-hover { width:100%; height:240px; object-fit:cover; display:block; position:absolute; top:0; left:0; transition:opacity 0.4s ease; }
+.producto-img-wrap { position:relative; width:100%; height:200px; overflow:hidden; }
+.producto-img, .producto-img-hover { width:100%; height:200px; object-fit:cover; display:block; position:absolute; top:0; left:0; transition:opacity 0.4s ease; }
 .producto-img-hover { opacity:0; }
 .producto-img-wrap.has-hover:hover .producto-img { opacity:0; }
 .producto-img-wrap.has-hover:hover .producto-img-hover { opacity:1; }
-.producto-img-placeholder { width:100%; height:240px; background:linear-gradient(135deg,#fde8f0,#f8c4d4); display:flex; align-items:center; justify-content:center; font-size:60px; }
-.producto-body { padding:18px 20px 20px; }
-.producto-categoria { font-size:10px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:6px; }
-.producto-nombre { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--text); margin-bottom:6px; line-height:1.3; }
-.producto-desc { font-size:13px; color:var(--text-mid); line-height:1.5; margin-bottom:14px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.producto-img-placeholder { width:100%; height:200px; background:linear-gradient(135deg,#fde8f0,#f8c4d4); display:flex; align-items:center; justify-content:center; font-size:60px; }
+.producto-body { padding:12px 16px 16px; }
+.producto-categoria { font-size:10px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:4px; }
+.producto-nombre { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; color:var(--text); margin-bottom:4px; line-height:1.3; }
+.producto-desc { font-size:12px; color:var(--text-mid); line-height:1.5; margin-bottom:10px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .producto-footer { display:flex; align-items:center; justify-content:space-between; }
 .producto-precio { font-family:'Lato',sans-serif; font-size:24px; font-weight:900; color:var(--crimson); letter-spacing:-0.5px; }
 .producto-precio span { font-size:15px; font-weight:700; font-family:'Lato',sans-serif; color:var(--crimson); opacity:0.75; }
@@ -78,7 +78,7 @@ body { font-family:'Lato',sans-serif; background:var(--blush); color:var(--text)
 .btn-agregar:hover { transform:scale(1.05); box-shadow:0 4px 14px rgba(139,0,53,0.35); }
 
 /* CANTIDAD */
-.cantidad-wrap { display:flex; align-items:center; gap:6px; margin-bottom:10px; }
+.cantidad-wrap { display:flex; align-items:center; gap:6px; margin-bottom:8px; }
 .qty-btn { width:28px; height:28px; border-radius:50%; border:1.5px solid rgba(139,0,53,0.25); background:white; color:var(--crimson); font-size:16px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; line-height:1; }
 .qty-btn:hover { background:var(--crimson); color:white; border-color:var(--crimson); }
 .qty-num { font-size:15px; font-weight:700; color:var(--text); min-width:20px; text-align:center; }
