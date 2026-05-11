@@ -121,17 +121,27 @@ body { font-family:'Lato',sans-serif; background:var(--blush); color:var(--text)
 .modal-producto-overlay.open { display:flex; }
 .modal-producto-box { background:white; border-radius:22px; width:100%; max-width:370px; overflow:hidden; box-shadow:0 20px 56px rgba(139,0,53,0.28); animation:modalIn 0.3s cubic-bezier(0.4,0,0.2,1); }
 @keyframes modalIn { from{opacity:0;transform:scale(0.92) translateY(16px)} to{opacity:1;transform:scale(1) translateY(0)} }
-.modal-producto-img { width:100%; height:210px; object-fit:cover; display:block; }
-.modal-producto-img-placeholder { width:100%; height:210px; background:linear-gradient(135deg,#fde8f0,#f8c4d4); display:flex; align-items:center; justify-content:center; font-size:66px; }
-.modal-producto-body { padding:18px 20px 22px; }
+.modal-producto-img { width:100%; height:273px; object-fit:cover; display:block; }
+.modal-producto-img-placeholder { width:100%; height:273px; background:linear-gradient(135deg,#fde8f0,#f8c4d4); display:flex; align-items:center; justify-content:center; font-size:66px; }
+.modal-producto-body { padding:14px 18px 20px; }
+/* COLORES */
+.modal-colores-wrap { margin-bottom:14px; }
+.modal-colores-label { font-size:11px; font-weight:800; color:var(--text-mid); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; display:block; }
+.modal-colores { display:flex; flex-wrap:wrap; gap:8px; }
+.color-dot { width:32px; height:32px; border-radius:50%; cursor:pointer; border:3px solid transparent; transition:all 0.2s; box-shadow:0 2px 6px rgba(0,0,0,0.15); position:relative; flex-shrink:0; }
+.color-dot:hover { transform:scale(1.12); }
+.color-dot.selected { border-color:var(--crimson); box-shadow:0 0 0 2px white, 0 0 0 4px var(--crimson); transform:scale(1.1); }
+.color-dot-label { font-size:10px; font-weight:700; color:var(--text-mid); text-align:center; margin-top:3px; }
+.color-item { display:flex; flex-direction:column; align-items:center; cursor:pointer; }
 .modal-producto-cat { font-size:9px; font-weight:800; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold); margin-bottom:4px; }
 .modal-producto-nombre { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--text); margin-bottom:6px; line-height:1.3; }
 .modal-producto-desc { font-size:13px; color:var(--text-soft); line-height:1.55; margin-bottom:14px; }
 .modal-mayor-hint { font-size:15px; color:var(--gold); font-weight:800; margin-bottom:14px; background:#fffbf0; border-radius:8px; padding:9px 12px; letter-spacing:0.2px; }
 .modal-divider { height:1px; background:rgba(139,0,53,0.08); margin-bottom:14px; }
 /* Fila: badge izq | controles der */
-.modal-cantidad-row { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.modal-cantidad-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
 .modal-badge-side { display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-end; }
+.modal-precio-side { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; }
 .badge-mayor-modal { display:inline-block; background:linear-gradient(135deg,var(--gold),#E8C97A); color:var(--crimson); font-size:13px; font-weight:900; padding:6px 16px; border-radius:50px; letter-spacing:0.5px; box-shadow:0 3px 10px rgba(201,168,76,0.35); white-space:nowrap; }
 .modal-qty-block { display:flex; flex-direction:column; align-items:center; gap:6px; }
 .modal-cantidad-label { font-size:11px; font-weight:800; color:var(--text-mid); text-transform:uppercase; letter-spacing:1px; }
@@ -139,9 +149,9 @@ body { font-family:'Lato',sans-serif; background:var(--blush); color:var(--text)
 .modal-qty-btn { width:36px; height:36px; border-radius:50%; border:2px solid rgba(139,0,53,0.22); background:white; color:var(--crimson); font-size:20px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; line-height:1; }
 .modal-qty-btn:hover { background:var(--crimson); color:white; border-color:var(--crimson); }
 .modal-qty-num { font-family:'Lato',sans-serif; font-size:22px; font-weight:900; color:var(--text); min-width:28px; text-align:center; }
-.modal-precio-wrap { background:linear-gradient(135deg,#fff0f5,#fde8f0); border-radius:12px; padding:12px 16px; text-align:center; margin-bottom:16px; }
-.modal-precio-total { font-family:'Lato',sans-serif; font-size:28px; font-weight:900; color:var(--crimson); letter-spacing:-1px; line-height:1; }
-.modal-precio-unit { font-size:12px; color:var(--text-soft); margin-top:3px; font-weight:600; }
+.modal-precio-wrap { display:none; }
+.modal-precio-total { font-family:'Lato',sans-serif; font-size:26px; font-weight:900; color:var(--crimson); letter-spacing:-1px; line-height:1; }
+.modal-precio-unit { font-size:11px; color:var(--text-soft); margin-top:2px; font-weight:600; }
 
 .modal-btns-producto { display:flex; gap:8px; }
 .btn-modal-producto-cancel { flex:1; background:none; border:1.5px solid rgba(139,0,53,0.18); color:var(--text-mid); border-radius:50px; padding:12px; font-size:13.5px; font-weight:700; cursor:pointer; font-family:'Lato',sans-serif; transition:all 0.2s; }
@@ -275,10 +285,16 @@ footer span { color:#E8C97A; font-weight:700; }
       <div class="modal-producto-nombre" id="modalProductoNombre"></div>
       <div class="modal-producto-desc" id="modalProductoDesc"></div>
       <div class="modal-mayor-hint" id="modalMayorHint" style="display:none"></div>
+      <div class="modal-colores-wrap" id="modalColoresWrap" style="display:none">
+        <span class="modal-colores-label">Color</span>
+        <div class="modal-colores" id="modalColores"></div>
+      </div>
       <div class="modal-divider"></div>
       <div class="modal-cantidad-row">
-        <div class="modal-badge-side">
-          <span class="badge-mayor-modal" id="modalBadgeMayor" style="display:none">🏷️ Por mayor</span>
+        <div class="modal-precio-side">
+          <div class="modal-precio-total" id="modalPrecioTotal">S/ 0.00</div>
+          <div class="modal-precio-unit" id="modalPrecioUnit">precio unitario</div>
+          <span class="badge-mayor-modal" id="modalBadgeMayor" style="display:none;margin-top:6px">🏷️ Por mayor</span>
         </div>
         <div class="modal-qty-block">
           <span class="modal-cantidad-label">Cantidad</span>
@@ -288,10 +304,6 @@ footer span { color:#E8C97A; font-weight:700; }
             <button class="modal-qty-btn" onclick="cambiarModalQty(1)">+</button>
           </div>
         </div>
-      </div>
-      <div class="modal-precio-wrap">
-        <div class="modal-precio-total" id="modalPrecioTotal">S/ 0.00</div>
-        <div class="modal-precio-unit" id="modalPrecioUnit">precio unitario</div>
       </div>
       <div class="modal-btns-producto">
         <button class="btn-modal-producto-cancel" onclick="cerrarModalProducto()">Cancelar</button>
@@ -379,10 +391,29 @@ window.filtrar = (cat, btn) => {
 // MODAL PRODUCTO
 let modalProductoActual = null;
 let modalCantidad = 1;
+let modalColorSeleccionado = null;
+
+const COLOR_MAP = {
+  rojo: '#E53E3E', rosa: '#F687B3', rosado: '#FFB6C1', fucsia: '#FF1493',
+  blanco: '#F7F7F7', crema: '#FFFDD0', amarillo: '#F6E05E', dorado: '#C9A84C',
+  naranja: '#ED8936', melon: '#FDBCB4', coral: '#FF6B6B', salmon: '#FA8072',
+  verde: '#48BB78', menta: '#98FF98', oliva: '#808000',
+  azul: '#4299E1', celeste: '#87CEEB', turquesa: '#40E0D0', aqua: '#00FFFF',
+  morado: '#805AD5', lila: '#C9A0DC', violeta: '#EE82EE', lavanda: '#E6E6FA',
+  negro: '#2D2D2D', gris: '#A0AEC0', plateado: '#C0C0C0',
+};
+
+function getColor(nombre) {
+  const key = nombre.toLowerCase().trim()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '');
+  return COLOR_MAP[key] || '#D3D3D3';
+}
 
 window.abrirModalProducto = (p) => {
   modalProductoActual = p;
   modalCantidad = 1;
+  modalColorSeleccionado = null;
+
   const imgWrap = document.getElementById('modalProductoImg');
   imgWrap.innerHTML = p.imagen
     ? `<img class="modal-producto-img" src="${p.imagen}" alt="${p.nombre}">`
@@ -400,8 +431,33 @@ window.abrirModalProducto = (p) => {
   } else {
     mayorHint.style.display = 'none';
   }
+
+  // Colores
+  const coloresWrap = document.getElementById('modalColoresWrap');
+  const coloresEl = document.getElementById('modalColores');
+  const colores = p.colores ? p.colores.split(',').map(c => c.trim()).filter(Boolean) : [];
+  if (colores.length > 0) {
+    modalColorSeleccionado = colores[0];
+    coloresEl.innerHTML = colores.map((c, i) => `
+      <div class="color-item" onclick="seleccionarColor('${c}')">
+        <div class="color-dot ${i === 0 ? 'selected' : ''}" id="dot-${c.replace(/\s/g,'-')}"
+          style="background:${getColor(c)}" title="${c}"></div>
+        <div class="color-dot-label">${c}</div>
+      </div>`).join('');
+    coloresWrap.style.display = 'block';
+  } else {
+    coloresWrap.style.display = 'none';
+  }
+
   actualizarModalCantidad();
   document.getElementById('modalProducto').classList.add('open');
+};
+
+window.seleccionarColor = (color) => {
+  modalColorSeleccionado = color;
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+  const dot = document.getElementById(`dot-${color.replace(/\s/g,'-')}`);
+  if (dot) dot.classList.add('selected');
 };
 
 window.cerrarModalProducto = () => {
@@ -431,10 +487,12 @@ window.confirmarModalProducto = () => {
   if (!p) return;
   const esMayor = p.precioMayor && modalCantidad >= 3;
   const precioFinal = esMayor ? p.precioMayor : p.precio;
-  for (let i = 0; i < modalCantidad; i++) carrito.push({ ...p, precio: precioFinal, _esMayor: esMayor });
+  const color = modalColorSeleccionado || null;
+  for (let i = 0; i < modalCantidad; i++) carrito.push({ ...p, precio: precioFinal, _esMayor: esMayor, _color: color });
   renderCarrito();
   cerrarModalProducto();
-  mostrarToast(`🌹 ${modalCantidad > 1 ? modalCantidad + 'x ' : ''}${p.nombre} agregado${esMayor ? ' (precio mayor)' : ''}`);
+  const colorStr = color ? ` (${color})` : '';
+  mostrarToast(`🌹 ${modalCantidad > 1 ? modalCantidad + 'x ' : ''}${p.nombre}${colorStr} agregado${esMayor ? ' · precio mayor' : ''}`);
 };
 
 window.quitarDelCarrito = (idx) => { carrito.splice(idx,1); renderCarrito(); };
@@ -469,7 +527,7 @@ function renderCarrito() {
       ${p.imagen ? `<img class="cart-item-img" src="${p.imagen}" alt="${p.nombre}">` : `<div class="cart-item-img-placeholder">🌺</div>`}
       <div class="cart-item-info">
         <div class="cart-item-nombre">${p.nombre}</div>
-        <div class="cart-item-precio">S/ ${(p.precioUnit * p.qty).toFixed(2)}${p._esMayor ? ' <span style="font-size:11px;color:#c0a030;font-family:Lato">precio mayor</span>' : ''}</div>
+        <div class="cart-item-precio">S/ ${(p.precioUnit * p.qty).toFixed(2)}${p._color ? ` <span style="font-size:11px;font-weight:700;color:var(--text-soft)">(${p._color})</span>` : ''}${p._esMayor ? ' <span style="font-size:11px;color:#c0a030;font-family:Lato">precio mayor</span>' : ''}</div>
       </div>
       <div class="cart-qty-controls">
         <span class="cart-qty">${p.qty}x</span>
@@ -527,7 +585,7 @@ window.confirmarPedido = () => {
   });
 
   const items = Object.values(agrupado)
-    .map(p => p.qty > 1 ? `• ${p.qty}x ${p.nombre} – S/ ${(p.precio * p.qty).toFixed(2)}` : `• ${p.nombre} – S/ ${p.precio.toFixed(2)}`)
+    .map(p => { const col = p._color ? ` (${p._color})` : ''; return p.qty > 1 ? `• ${p.qty}x ${p.nombre}${col} – S/ ${(p.precio * p.qty).toFixed(2)}` : `• ${p.nombre}${col} – S/ ${p.precio.toFixed(2)}`; })
     .join('\n');
   const total = Object.values(agrupado).reduce((a, p) => a + p.precio * p.qty, 0);
 

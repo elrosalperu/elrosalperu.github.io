@@ -208,6 +208,10 @@ body{font-family:'Lato',sans-serif;background:#f7eef2;color:var(--text);min-heig
           <input id="fDesc" placeholder="Breve descripción del producto">
         </div>
         <div class="form-group full">
+          <label>Colores disponibles <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#C9A84C">— separados por coma</span></label>
+          <input id="fColores" placeholder="Ej: rojo, blanco, rosado, turquesa, melon, lila">
+        </div>
+        <div class="form-group full">
           <label>Imágenes del producto</label>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
             <div>
@@ -585,6 +589,7 @@ window.guardarProducto = async () => {
         return cat;
       })(),
       descripcion: document.getElementById('fDesc').value.trim(),
+      colores: document.getElementById('fColores').value.trim(),
       imagen,
       imagen2: imagen2 || null
     };
@@ -622,6 +627,7 @@ window.editarProducto = (id) => {
   document.getElementById('fPrecioMayor').value = p.precioMayor || '';
   actualizarSelectCategorias(p.categoria || '');
   document.getElementById('fDesc').value = p.descripcion || '';
+  document.getElementById('fColores').value = p.colores || '';
 
   const preview1 = document.getElementById('imgPreview1');
   if (p.imagen) { preview1.src = p.imagen; preview1.style.display = 'block'; document.getElementById('uploadIcon1').style.display = 'none'; document.getElementById('uploadText1').textContent = 'Imagen actual'; }
@@ -643,7 +649,7 @@ window.cancelarEdicion = () => { editId = null; limpiarForm(); };
 
 function limpiarForm() {
   editId = null; imagenFile1 = null; imagenFile2 = null; imagenUrlActual1 = ''; imagenUrlActual2 = '';
-  ['fNombre','fPrecio','fPrecioMayor','fDesc'].forEach(id => document.getElementById(id).value = '');
+  ['fNombre','fPrecio','fPrecioMayor','fDesc','fColores'].forEach(id => document.getElementById(id).value = '');
   // Mantener la última categoría seleccionada
   const lastCat = sessionStorage.getItem('elrosal_lastcat') || '';
   actualizarSelectCategorias(lastCat);
