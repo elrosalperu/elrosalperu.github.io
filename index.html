@@ -506,8 +506,9 @@ function renderCarrito() {
   // Agrupar por id de producto
   const agrupado = {};
   carrito.forEach(p => {
-    if (!agrupado[p.id]) agrupado[p.id] = { ...p, qty: 0 };
-    agrupado[p.id].qty++;
+    const key = p.id + '|' + (p._color || '');
+    if (!agrupado[key]) agrupado[key] = { ...p, qty: 0 };
+    agrupado[key].qty++;
   });
 
   // Recalcular precio según cantidad total (precio mayor si qty >= 3)
@@ -531,7 +532,7 @@ function renderCarrito() {
       </div>
       <div class="cart-qty-controls">
         <span class="cart-qty">${p.qty}x</span>
-        <button class="btn-remove" onclick="eliminarProducto('${p.id}')">🗑️</button>
+        <button class="btn-remove" onclick="eliminarProducto('${p.id}','${p._color||''}')">🗑️</button>
       </div>
     </div>`).join('');
 
@@ -553,9 +554,9 @@ window.cambiarQty = (id, delta) => {
   renderCarrito();
 };
 
-window.eliminarProducto = (id) => {
+window.eliminarProducto = (id, color) => {
   const indices = [];
-  carrito.forEach((p, i) => { if (p.id === id) indices.push(i); });
+  carrito.forEach((p, i) => { if (p.id === id && (p._color || '') === (color || '')) indices.push(i); });
   for (let i = indices.length - 1; i >= 0; i--) carrito.splice(indices[i], 1);
   renderCarrito();
 };
@@ -579,8 +580,8 @@ window.confirmarPedido = () => {
   // Agrupar items
   const agrupado = {};
   carrito.forEach(p => {
-    const key = p.id + '_' + p.precio;
-    if (!agrupado[key]) agrupado[key] = { nombre: p.nombre, precio: Number(p.precio), qty: 0 };
+    const key = p.id + '|' + (p._color || '') + '|' + p.precio;
+    if (!agrupado[key]) agrupado[key] = { nombre: p.nombre, precio: Number(p.precio), _color: p._color || '', qty: 0 };
     agrupado[key].qty++;
   });
 
@@ -665,8 +666,9 @@ window.descargarPDF = () => {
   // Agrupar items por id
   const agrupado = {};
   carrito.forEach(p => {
-    if (!agrupado[p.id]) agrupado[p.id] = { ...p, qty: 0 };
-    agrupado[p.id].qty++;
+    const key = p.id + '|' + (p._color || '');
+    if (!agrupado[key]) agrupado[key] = { ...p, qty: 0 };
+    agrupado[key].qty++;
   });
   Object.values(agrupado).forEach(p => {
     const base = productos.find(x => x.id === p.id);
@@ -686,7 +688,7 @@ window.descargarPDF = () => {
       doc.rect(margin, y - 4, W - margin * 2, 10, 'F');
     }
     doc.setTextColor(45, 21, 32);
-    const nombreText = item.qty > 1 ? `${item.qty}x  ${item.nombre}` : item.nombre;
+    const nombreText = (item.qty > 1 ? `${item.qty}x  ` : '') + item.nombre + (item._color ? ` (${item._color})` : '');
     doc.text(nombreText, margin + 4, y + 2);
     doc.setTextColor(139, 0, 53);
     doc.setFont('helvetica', 'bold');
