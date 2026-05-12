@@ -107,6 +107,20 @@ body{font-family:'Lato',sans-serif;background:#f7eef2;color:var(--text);min-heig
 
 @media(max-width:600px){.form-grid{grid-template-columns:1fr}.producto-row-actions{flex-direction:column}}
 
+/* VARIANTES */
+.variantes-wrap { display:flex; flex-direction:column; gap:10px; }
+.variante-row { display:flex; align-items:center; gap:10px; background:#fdf5f8; border-radius:12px; padding:10px 12px; border:1px solid rgba(139,0,53,0.1); }
+.variante-nombre { flex:1; padding:8px 12px; border:1.5px solid rgba(139,0,53,0.15); border-radius:8px; font-size:13px; font-family:'Lato',sans-serif; color:var(--text); outline:none; background:white; }
+.variante-nombre:focus { border-color:var(--crimson); }
+.variante-img-btn { position:relative; width:52px; height:52px; border-radius:10px; overflow:hidden; border:2px dashed rgba(139,0,53,0.25); cursor:pointer; flex-shrink:0; background:#fff0f5; display:flex; align-items:center; justify-content:center; font-size:20px; transition:border-color 0.2s; }
+.variante-img-btn:hover { border-color:var(--crimson); }
+.variante-img-btn input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+.variante-img-btn img { width:100%; height:100%; object-fit:cover; display:none; }
+.btn-rm-variante { background:none; border:none; color:#dc2626; font-size:18px; cursor:pointer; padding:4px; border-radius:50%; transition:background 0.2s; flex-shrink:0; }
+.btn-rm-variante:hover { background:#fee2e2; }
+.btn-add-variante { background:white; border:1.5px dashed rgba(139,0,53,0.3); color:var(--crimson); border-radius:10px; padding:10px; font-size:13px; font-weight:700; cursor:pointer; font-family:'Lato',sans-serif; width:100%; transition:all 0.2s; margin-top:4px; }
+.btn-add-variante:hover { background:#fff0f5; border-color:var(--crimson); }
+
 /* BÚSQUEDA */
 .search-wrap{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .search-input{padding:9px 16px;border:1.5px solid rgba(139,0,53,0.15);border-radius:50px;font-size:13px;font-family:'Lato',sans-serif;color:var(--text);outline:none;transition:border-color 0.2s;width:220px;background:white}
@@ -115,10 +129,7 @@ body{font-family:'Lato',sans-serif;background:#f7eef2;color:var(--text);min-heig
 .filter-cat:focus{border-color:var(--crimson)}
 .productos-count{font-size:12px;color:var(--text-mid);font-weight:600}
 
-/* DRAG */
-.producto-row{cursor:grab}
-.producto-row.dragging{opacity:0.45;box-shadow:0 8px 24px rgba(139,0,53,0.2);transform:scale(0.98)}
-.producto-row.drag-over{border:2px dashed var(--crimson);background:#fff0f5}
+
 
 /* BTN RENOMBRAR */
 .btn-renombrar{background:none;border:none;cursor:pointer;font-size:14px;padding:4px 6px;border-radius:6px;transition:background 0.2s;color:var(--gold);font-weight:800}
@@ -208,35 +219,12 @@ body{font-family:'Lato',sans-serif;background:#f7eef2;color:var(--text);min-heig
           <input id="fDesc" placeholder="Breve descripción del producto">
         </div>
         <div class="form-group full">
-          <label>Colores disponibles <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#C9A84C">— separados por coma</span></label>
-          <input id="fColores" placeholder="Ej: rojo, blanco, rosado, turquesa, melon, lila">
-        </div>
-        <div class="form-group full">
-          <label>Imágenes del producto</label>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <div>
-              <div style="font-size:11px;font-weight:700;color:var(--text-mid);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">📷 Foto principal *</div>
-              <div class="img-upload-area" id="uploadArea1">
-                <input type="file" id="fImagen1" accept="image/*" onchange="previsualizarImagen(this,1)">
-                <div class="img-upload-icon" id="uploadIcon1">📷</div>
-                <div class="img-upload-text" id="uploadText1">Seleccionar foto</div>
-                <img id="imgPreview1" class="img-preview">
-              </div>
-            </div>
-            <div>
-              <div style="font-size:11px;font-weight:700;color:var(--text-mid);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">🖼️ Foto secundaria <span style="font-weight:400;text-transform:none">(hover)</span></div>
-              <div class="img-upload-area" id="uploadArea2">
-                <input type="file" id="fImagen2" accept="image/*" onchange="previsualizarImagen(this,2)">
-                <div class="img-upload-icon" id="uploadIcon2">🖼️</div>
-                <div class="img-upload-text" id="uploadText2">Seleccionar foto</div>
-                <img id="imgPreview2" class="img-preview">
-              </div>
-            </div>
-          </div>
-          <div class="upload-progress" id="uploadProgress">
+          <label>Variantes de color <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#C9A84C">— nombre + foto por cada color</span></label>
+          <div class="variantes-wrap" id="variantesWrap"></div>
+          <button type="button" class="btn-add-variante" onclick="agregarVariante()">+ Agregar color / variante</button>
+          <div class="upload-progress" id="uploadProgress" style="margin-top:8px">
             <div class="upload-progress-bar" id="uploadProgressBar"></div>
           </div>
-          <div id="imgUrlActual" style="font-size:12px;color:var(--text-mid);margin-top:6px"></div>
         </div>
       </div>
       <div class="form-actions">
@@ -310,10 +298,7 @@ const CLOUDINARY_PRESET = 'elrosal';
 
 let productos = [];
 let editId = null;
-let imagenFile1 = null;
-let imagenFile2 = null;
-let imagenUrlActual1 = '';
-let imagenUrlActual2 = '';
+let variantesData = []; // [{color, imagen(url), file}]
 
 window.intentarLogin = () => {
   const u = document.getElementById('loginUser').value.trim();
@@ -388,17 +373,47 @@ function comprimirImagen(file, maxPx=1200, calidad=0.82) {
   });
 }
 
-// ── PREVISUALIZAR ──
-window.previsualizarImagen = (input, slot) => {
+// ── VARIANTES ──
+function renderVariantes() {
+  const wrap = document.getElementById('variantesWrap');
+  wrap.innerHTML = variantesData.map((v, i) => `
+    <div class="variante-row" id="vrow-${i}" data-idx="${i}">
+      <input class="variante-nombre" placeholder="Nombre (ej: blanco, niu, acero...)"
+        value="${v.color.replace(/"/g,'&quot;')}" data-idx="${i}" oninput="variantesData[this.dataset.idx].color=this.value">
+      <label class="variante-img-btn" title="Subir foto">
+        <input type="file" accept="image/*" data-idx="${i}" onchange="onVarianteImg(this,this.dataset.idx)">
+        <img id="vimg-${i}" src="${v.imagen && !v.imagen.startsWith('blob:') ? v.imagen : (v._preview||'')}" style="${(v.imagen && !v.imagen.startsWith('blob:')) || v._preview ? 'display:block' : 'display:none'}">
+        <span class="vimg-placeholder" style="${(v.imagen && !v.imagen.startsWith('blob:')) || v._preview ? 'display:none' : ''}">📷</span>
+      </label>
+      <button type="button" class="btn-rm-variante" data-idx="${i}" onclick="quitarVariante(this.dataset.idx)">✕</button>
+    </div>`).join('');
+}
+
+window.agregarVariante = () => {
+  variantesData.push({ color: '', imagen: '', file: null });
+  renderVariantes();
+  // focus en el último input
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('.variante-nombre');
+    if (inputs.length) inputs[inputs.length-1].focus();
+  }, 50);
+};
+
+window.quitarVariante = (i) => {
+  variantesData.splice(parseInt(i), 1);
+  renderVariantes();
+};
+
+window.onVarianteImg = (input, i) => {
+  const idx = parseInt(i);
   const file = input.files[0];
   if (!file) return;
-  if (slot === 1) imagenFile1 = file;
-  else imagenFile2 = file;
-  const preview = document.getElementById(`imgPreview${slot}`);
-  preview.src = URL.createObjectURL(file);
-  preview.style.display = 'block';
-  document.getElementById(`uploadIcon${slot}`).style.display = 'none';
-  document.getElementById(`uploadText${slot}`).textContent = file.name;
+  variantesData[idx].file = file;
+  variantesData[idx]._preview = URL.createObjectURL(file);
+  const img = document.getElementById(`vimg-${idx}`);
+  if (img) { img.src = variantesData[idx]._preview; img.style.display = 'block'; }
+  const placeholder = input.closest('.variante-img-btn')?.querySelector('.vimg-placeholder');
+  if (placeholder) placeholder.style.display = 'none';
 };
 
 // ── CARGAR PRODUCTOS ──
@@ -434,8 +449,8 @@ function renderLista(lista_filtrada = null) {
     return;
   }
   lista.innerHTML = fuente.map(p => `
-    <div class="producto-row" id="row-${p.id}" draggable="true" data-id="${p.id}">
-      ${p.imagen ? `<img class="producto-row-img" src="${p.imagen}" alt="${p.nombre}">` : `<div class="producto-row-img">🌺</div>`}
+    <div class="producto-row" id="row-${p.id}">
+      ${(p.imagen || (p.variantes && p.variantes[0]?.imagen)) ? `<img class="producto-row-img" src="${p.imagen || p.variantes[0].imagen}" alt="${p.nombre}">` : `<div class="producto-row-img">🌺</div>`}
       <div class="producto-row-info">
         ${p.categoria ? `<div class="producto-row-cat">${p.categoria}</div>` : ''}
         <div class="producto-row-nombre">${p.nombre}</div>
@@ -447,8 +462,7 @@ function renderLista(lista_filtrada = null) {
       </div>
     </div>`).join('');
 
-  // Drag & drop
-  initDrag();
+
 }
 
 // ── BUSCAR / FILTRAR ──
@@ -463,29 +477,7 @@ window.filtrarLista = () => {
   renderLista(filtrados);
 };
 
-// ── DRAG & DROP ──
-let dragId = null;
 
-function initDrag() {
-  document.querySelectorAll('.producto-row[draggable]').forEach(row => {
-    row.addEventListener('dragstart', () => { dragId = row.dataset.id; row.classList.add('dragging'); });
-    row.addEventListener('dragend', () => { row.classList.remove('dragging'); dragId = null; });
-    row.addEventListener('dragover', e => { e.preventDefault(); row.classList.add('drag-over'); });
-    row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
-    row.addEventListener('drop', e => {
-      e.preventDefault();
-      row.classList.remove('drag-over');
-      if (!dragId || dragId === row.dataset.id) return;
-      const fromIdx = productos.findIndex(p => p.id === dragId);
-      const toIdx = productos.findIndex(p => p.id === row.dataset.id);
-      if (fromIdx === -1 || toIdx === -1) return;
-      const [moved] = productos.splice(fromIdx, 1);
-      productos.splice(toIdx, 0, moved);
-      renderLista();
-      mostrarToast('↕️ Orden actualizado', true);
-    });
-  });
-}
 
 // ── MODAL ELIMINAR ──
 let eliminarIdPendiente = null;
@@ -571,12 +563,23 @@ window.guardarProducto = async () => {
   btn.textContent = '⏳ Guardando...';
 
   try {
-    let imagen = imagenUrlActual1;
-    let imagen2 = imagenUrlActual2;
-    if (imagenFile1) { btn.textContent = '⏳ Subiendo foto 1...'; imagen = await subirImagen(imagenFile1); }
-    if (imagenFile2) { btn.textContent = '⏳ Subiendo foto 2...'; imagen2 = await subirImagen(imagenFile2); }
+    // Subir fotos de variantes que tengan file nuevo
+    btn.textContent = '⏳ Subiendo fotos...';
+    const variantesFinales = await Promise.all(variantesData.map(async (v, i) => {
+      if (v.file) {
+        btn.textContent = `⏳ Subiendo foto ${i+1}...`;
+        const url = await subirImagen(v.file);
+        return { color: v.color.trim(), imagen: url };
+      }
+      // usar URL original de Cloudinary (no blob)
+      const imgFinal = v.imagen && !v.imagen.startsWith('blob:') ? v.imagen : '';
+      return { color: v.color.trim(), imagen: imgFinal };
+    }));
+    const variantesValidas = variantesFinales.filter(v => v.color);
 
     const precioMayor = document.getElementById('fPrecioMayor').value.trim();
+    // imagen principal = primera variante para compatibilidad con lista
+    const imagenPrincipal = variantesValidas[0]?.imagen || '';
     const datos = {
       nombre,
       precio: parseFloat(precio),
@@ -589,9 +592,8 @@ window.guardarProducto = async () => {
         return cat;
       })(),
       descripcion: document.getElementById('fDesc').value.trim(),
-      colores: document.getElementById('fColores').value.trim(),
-      imagen,
-      imagen2: imagen2 || null
+      variantes: variantesValidas,
+      imagen: imagenPrincipal,
     };
 
     if (editId) {
@@ -617,24 +619,22 @@ window.editarProducto = (id) => {
   const p = productos.find(x => x.id === id);
   if (!p) return;
   editId = id;
-  imagenUrlActual1 = p.imagen || '';
-  imagenUrlActual2 = p.imagen2 || '';
-  imagenFile1 = null;
-  imagenFile2 = null;
-
   document.getElementById('fNombre').value = p.nombre || '';
   document.getElementById('fPrecio').value = p.precio || '';
   document.getElementById('fPrecioMayor').value = p.precioMayor || '';
   actualizarSelectCategorias(p.categoria || '');
   document.getElementById('fDesc').value = p.descripcion || '';
-  document.getElementById('fColores').value = p.colores || '';
 
-  const preview1 = document.getElementById('imgPreview1');
-  if (p.imagen) { preview1.src = p.imagen; preview1.style.display = 'block'; document.getElementById('uploadIcon1').style.display = 'none'; document.getElementById('uploadText1').textContent = 'Imagen actual'; }
-  const preview2 = document.getElementById('imgPreview2');
-  if (p.imagen2) { preview2.src = p.imagen2; preview2.style.display = 'block'; document.getElementById('uploadIcon2').style.display = 'none'; document.getElementById('uploadText2').textContent = 'Imagen actual'; }
-
-  document.getElementById('imgUrlActual').textContent = p.imagen ? '✅ Tiene imagen guardada' : '';
+  // Cargar variantes
+  if (p.variantes && p.variantes.length) {
+    variantesData = p.variantes.map(v => ({ color: v.color, imagen: v.imagen, file: null }));
+  } else if (p.imagen) {
+    // compatibilidad con productos viejos que tienen imagen pero no variantes
+    variantesData = [{ color: 'principal', imagen: p.imagen, file: null }];
+  } else {
+    variantesData = [];
+  }
+  renderVariantes();
   document.getElementById('formIcon').textContent = '✏️';
   document.getElementById('formTitulo').textContent = `Editando: ${p.nombre}`;
   document.getElementById('btnGuardar').textContent = '💾 Actualizar producto';
@@ -648,19 +648,13 @@ window.editarProducto = (id) => {
 window.cancelarEdicion = () => { editId = null; limpiarForm(); };
 
 function limpiarForm() {
-  editId = null; imagenFile1 = null; imagenFile2 = null; imagenUrlActual1 = ''; imagenUrlActual2 = '';
-  ['fNombre','fPrecio','fPrecioMayor','fDesc','fColores'].forEach(id => document.getElementById(id).value = '');
+  editId = null;
+  variantesData = [];
+  renderVariantes();
+  ['fNombre','fPrecio','fPrecioMayor','fDesc'].forEach(id => document.getElementById(id).value = '');
   // Mantener la última categoría seleccionada
   const lastCat = sessionStorage.getItem('elrosal_lastcat') || '';
   actualizarSelectCategorias(lastCat);
-  ['fImagen1','fImagen2'].forEach(id => document.getElementById(id).value = '');
-  [1,2].forEach(s => {
-    const preview = document.getElementById(`imgPreview${s}`);
-    preview.style.display = 'none'; preview.src = '';
-    document.getElementById(`uploadIcon${s}`).style.display = 'block';
-    document.getElementById(`uploadText${s}`).textContent = s === 1 ? 'Seleccionar foto' : 'Seleccionar foto';
-  });
-  document.getElementById('imgUrlActual').textContent = '';
   document.getElementById('formIcon').textContent = '➕';
   document.getElementById('formTitulo').textContent = 'Nuevo producto';
   document.getElementById('btnGuardar').textContent = '💾 Guardar producto';
