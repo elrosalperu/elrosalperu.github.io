@@ -374,25 +374,42 @@ function comprimirImagen(file, maxPx=1200, calidad=0.82) {
 }
 
 // ── VARIANTES ──
+
+// Sincroniza los valores actuales del DOM → variantesData ANTES de cualquier re-render
+function sincronizarVariantes() {
+  document.querySelectorAll('.variante-nombre').forEach(input => {
+    const idx = parseInt(input.dataset.idx);
+    if (!isNaN(idx) && variantesData[idx] !== undefined) {
+      variantesData[idx].color = input.value;
+    }
+  });
+}
+
 function renderVariantes() {
   const wrap = document.getElementById('variantesWrap');
-  wrap.innerHTML = variantesData.map((v, i) => `
+  wrap.innerHTML = variantesData.map((v, i) => {
+    const imgSrc = (v._preview) || (v.imagen && !v.imagen.startsWith('blob:') ? v.imagen : '');
+    const hasImg = !!imgSrc;
+    return `
     <div class="variante-row" id="vrow-${i}" data-idx="${i}">
       <input class="variante-nombre" placeholder="Nombre (ej: blanco, niu, acero...)"
-        value="${v.color.replace(/"/g,'&quot;')}" data-idx="${i}" oninput="variantesData[this.dataset.idx].color=this.value">
+        value="${v.color.replace(/"/g,'&quot;')}" data-idx="${i}"
+        oninput="variantesData[this.dataset.idx].color=this.value"
+        onchange="variantesData[this.dataset.idx].color=this.value">
       <label class="variante-img-btn" title="Subir foto">
         <input type="file" accept="image/*" data-idx="${i}" onchange="onVarianteImg(this,this.dataset.idx)">
-        <img id="vimg-${i}" src="${v.imagen && !v.imagen.startsWith('blob:') ? v.imagen : (v._preview||'')}" style="${(v.imagen && !v.imagen.startsWith('blob:')) || v._preview ? 'display:block' : 'display:none'}">
-        <span class="vimg-placeholder" style="${(v.imagen && !v.imagen.startsWith('blob:')) || v._preview ? 'display:none' : ''}">📷</span>
+        <img id="vimg-${i}" src="${imgSrc}" style="${hasImg ? 'display:block' : 'display:none'}">
+        <span class="vimg-placeholder" style="${hasImg ? 'display:none' : ''}">📷</span>
       </label>
-      <button type="button" class="btn-rm-variante" data-idx="${i}" onclick="quitarVariante(this.dataset.idx)">✕</button>
-    </div>`).join('');
+      <button type="button" class="btn-rm-variante" data-idx="${i}" onclick="sincronizarVariantes();quitarVariante(this.dataset.idx)">✕</button>
+    </div>`;
+  }).join('');
 }
 
 window.agregarVariante = () => {
+  sincronizarVariantes(); // guardar lo escrito antes de re-renderizar
   variantesData.push({ color: '', imagen: '', file: null });
   renderVariantes();
-  // focus en el último input
   setTimeout(() => {
     const inputs = document.querySelectorAll('.variante-nombre');
     if (inputs.length) inputs[inputs.length-1].focus();
@@ -400,6 +417,7 @@ window.agregarVariante = () => {
 };
 
 window.quitarVariante = (i) => {
+  // sincronizarVariantes() ya fue llamado en el onclick antes de llegar aquí
   variantesData.splice(parseInt(i), 1);
   renderVariantes();
 };
@@ -554,6 +572,7 @@ window.confirmarRenombrar = async () => {
 
 // ── GUARDAR ──
 window.guardarProducto = async () => {
+  sincronizarVariantes(); // capturar valores del DOM antes de procesar
   const nombre = document.getElementById('fNombre').value.trim();
   const precio = document.getElementById('fPrecio').value.trim();
   if (!nombre || !precio) { mostrarToast('Completa nombre y precio', false); return; }
@@ -627,10 +646,10 @@ window.editarProducto = (id) => {
 
   // Cargar variantes
   if (p.variantes && p.variantes.length) {
-    variantesData = p.variantes.map(v => ({ color: v.color, imagen: v.imagen, file: null }));
+    variantesData = p.variantes.map(v => ({ color: v.color || '', imagen: v.imagen || '', file: null, _preview: '' }));
   } else if (p.imagen) {
     // compatibilidad con productos viejos que tienen imagen pero no variantes
-    variantesData = [{ color: 'principal', imagen: p.imagen, file: null }];
+    variantesData = [{ color: 'principal', imagen: p.imagen, file: null, _preview: '' }];
   } else {
     variantesData = [];
   }

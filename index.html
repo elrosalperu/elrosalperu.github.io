@@ -378,11 +378,13 @@ function renderProductos() {
         const imgs = p.variantes && p.variantes.length
           ? p.variantes.map(v => v.imagen).filter(Boolean)
           : [p.imagen, p.imagen2].filter(Boolean);
-        if (!imgs.length) return `<div class="producto-img-placeholder">🌺</div>`;
-        const hasHover = imgs.length > 1;
+        // fallback: si variantes existen pero ninguna tiene foto, usar p.imagen
+        const imgsFinales = imgs.length ? imgs : [p.imagen].filter(Boolean);
+        if (!imgsFinales.length) return `<div class="producto-img-placeholder">🌺</div>`;
+        const hasHover = imgsFinales.length > 1;
         return `<div class="producto-img-wrap${hasHover ? ' has-hover' : ''}" ${hasHover ? 'onclick="toggleImg(event,this)"' : ''}>
-            <img class="producto-img" src="${imgs[0]}" alt="${p.nombre}" loading="lazy">
-            ${hasHover ? `<img class="producto-img-hover" src="${imgs[1]}" alt="${p.nombre}" loading="lazy">` : ''}
+            <img class="producto-img" src="${imgsFinales[0]}" alt="${p.nombre}" loading="lazy">
+            ${hasHover ? `<img class="producto-img-hover" src="${imgsFinales[1]}" alt="${p.nombre}" loading="lazy">` : ''}
            </div>`;
       })()}
       <div class="producto-body">
@@ -461,8 +463,8 @@ window.abrirModalProducto = (p) => {
       ? `<img class="modal-producto-img" src="${variantes[0].imagen}" alt="${p.nombre}">`
       : `<div class="modal-producto-img-placeholder">🌺</div>`;
     coloresEl.innerHTML = variantes.map((v, i) => `
-      <div class="color-item" onclick="seleccionarColor('${v.color}','${v.imagen}')">
-        <div class="color-dot ${i === 0 ? 'selected' : ''}" id="dot-${v.color.replace(/\s/g,'-')}">
+      <div class="color-item" onclick="seleccionarColor(${i})">
+        <div class="color-dot ${i === 0 ? 'selected' : ''}" id="dot-${i}">
           ${v.imagen ? `<img src="${v.imagen}" alt="${v.color}">` : ''}
         </div>
         <div class="color-dot-label">${v.color}</div>
@@ -476,15 +478,21 @@ window.abrirModalProducto = (p) => {
   document.getElementById('modalProducto').classList.add('open');
 };
 
-window.seleccionarColor = (color, imagen) => {
-  modalColorSeleccionado = color;
+window.seleccionarColor = (idx) => {
+  const p = modalProductoActual;
+  if (!p || !p.variantes) return;
+  const v = p.variantes[idx];
+  if (!v) return;
+  modalColorSeleccionado = v.color;
   document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
-  const dot = document.getElementById(`dot-${color.replace(/\s/g,'-')}`);
+  const dot = document.getElementById(`dot-${idx}`);
   if (dot) dot.classList.add('selected');
   // Cambiar foto principal
   const imgWrap = document.getElementById('modalProductoImg');
-  if (imagen) {
-    imgWrap.innerHTML = `<img class="modal-producto-img" src="${imagen}" alt="${color}">`;
+  if (v.imagen) {
+    imgWrap.innerHTML = `<img class="modal-producto-img" src="${v.imagen}" alt="${v.color}">`;
+  } else {
+    imgWrap.innerHTML = `<div class="modal-producto-img-placeholder">🌺</div>`;
   }
 };
 
@@ -551,9 +559,15 @@ function renderCarrito() {
     }
   });
 
-  items.innerHTML = Object.values(agrupado).map(p => `
+  items.innerHTML = Object.values(agrupado).map(p => {
+    // imagen: usar la de la variante seleccionada si existe
+    const varianteImg = p._color && p.variantes
+      ? (p.variantes.find(v => v.color === p._color)?.imagen || '')
+      : '';
+    const imgSrc = varianteImg || p.imagen || '';
+    return `
     <div class="cart-item">
-      ${p.imagen ? `<img class="cart-item-img" src="${p.imagen}" alt="${p.nombre}">` : `<div class="cart-item-img-placeholder">🌺</div>`}
+      ${imgSrc ? `<img class="cart-item-img" src="${imgSrc}" alt="${p.nombre}">` : `<div class="cart-item-img-placeholder">🌺</div>`}
       <div class="cart-item-info">
         <div class="cart-item-nombre">${p.nombre}</div>
         <div class="cart-item-precio">S/ ${(p.precioUnit * p.qty).toFixed(2)}${p._color ? ` <span style="font-size:11px;font-weight:700;color:var(--text-soft)">(${p._color})</span>` : ''}${p._esMayor ? ' <span style="font-size:11px;color:#c0a030;font-family:Lato">precio mayor</span>' : ''}</div>
@@ -562,7 +576,8 @@ function renderCarrito() {
         <span class="cart-qty">${p.qty}x</span>
         <button class="btn-remove" onclick="eliminarProducto('${p.id}','${p._color||''}')">🗑️</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   // Total recalculado
   const totalNum = Object.values(agrupado).reduce((a, p) => a + p.precioUnit * p.qty, 0);
