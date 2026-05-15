@@ -721,6 +721,9 @@ window.seleccionarColor = (idx) => {
   } else {
     imgWrap.innerHTML = `<div class="modal-producto-img-placeholder">🌺</div>`;
   }
+  // Resetear cantidad a 1 al cambiar de color
+  modalCantidad = 1;
+  actualizarModalCantidad();
 };
 
 window.cerrarModalProducto = () => {
