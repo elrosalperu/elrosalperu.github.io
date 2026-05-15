@@ -218,6 +218,15 @@ body{font-family:'Lato',sans-serif;background:#f7eef2;color:var(--text);min-heig
           <label>Descripción</label>
           <input id="fDesc" placeholder="Breve descripción del producto">
         </div>
+        <div class="form-group">
+          <label>Badge <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#C9A84C">— etiqueta visible en la tienda</span></label>
+          <select id="fBadge" style="padding:11px 16px;border:1.5px solid rgba(139,0,53,0.15);border-radius:12px;font-size:14px;font-family:'Lato',sans-serif;color:var(--text);outline:none;transition:border-color 0.2s;background:white;width:100%">
+            <option value="">Ninguno</option>
+            <option value="Nuevo">🟢 Nuevo</option>
+            <option value="Popular">🔥 Popular</option>
+            <option value="Oferta">🏷️ Oferta</option>
+          </select>
+        </div>
         <div class="form-group full">
           <label>Variantes de color <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#C9A84C">— nombre + foto por cada color</span></label>
           <div class="variantes-wrap" id="variantesWrap"></div>
@@ -611,6 +620,7 @@ window.guardarProducto = async () => {
         return cat;
       })(),
       descripcion: document.getElementById('fDesc').value.trim(),
+      badge: document.getElementById('fBadge').value || null,
       variantes: variantesValidas,
       imagen: imagenPrincipal,
     };
@@ -643,6 +653,7 @@ window.editarProducto = (id) => {
   document.getElementById('fPrecioMayor').value = p.precioMayor || '';
   actualizarSelectCategorias(p.categoria || '');
   document.getElementById('fDesc').value = p.descripcion || '';
+  document.getElementById('fBadge').value = p.badge || '';
 
   // Cargar variantes
   if (p.variantes && p.variantes.length) {
@@ -671,6 +682,7 @@ function limpiarForm() {
   variantesData = [];
   renderVariantes();
   ['fNombre','fPrecio','fPrecioMayor','fDesc'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fBadge').value = '';
   // Mantener la última categoría seleccionada
   const lastCat = sessionStorage.getItem('elrosal_lastcat') || '';
   actualizarSelectCategorias(lastCat);
